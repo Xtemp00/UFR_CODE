@@ -132,21 +132,23 @@ tableDeVerite(arbres2)"""
 arbres = Node.fromString('IMP(AND(TRUE,FALSE),OR(X0,NOT(X1)))')
 
 def supprimeIMPracine(formule):
-    if formule.value == Symbol.IMP():
+    if formule.value.name == "IMP":
         or_node = Node(Symbol.OR())
-        or_node.left = Node(Symbol.NOT(), formule.left)
+        or_node.left = Node(Symbol.NOT())
+        or_node.left.left = formule.left
         or_node.right = formule.right
         return or_node
     return formule
 
 
 print(supprimeIMPracine(arbres))
-
+arbres = Node.fromString('AND(IMP(TRUE,FALSE),OR(X0,NOT(X1)))')
 
 def supprimeIMP(formule):
-    if formule.value == Symbol.IMP():
+    if formule.value.name == "IMP":
         or_node = Node(Symbol.OR())
-        or_node.left = Node(Symbol.NOT(), formule.left)
+        or_node.left = Node(Symbol.NOT())
+        or_node.left.left = formule.left
         or_node.right = formule.right
         return or_node
     elif formule.value.arity == 1:
@@ -180,8 +182,7 @@ print(supprimeEQUracine(arbres))
 
 def supprimeEQU(formule):
     if formule.value == Symbol.EQU():
-        left_not = N
-pdode(Symbol.NOT(), formule.left)
+        left_not = Node(Symbol.NOT(), formule.left)
         right_not = Node(Symbol.NOT(), formule.right)
         or1 = Node(Symbol.OR(), left_not, formule.right)
         or2 = Node(Symbol.OR(), right_not, formule.left)
@@ -204,7 +205,6 @@ def negationNormale(formule):
         elif formule.left.value.arity == 0:
             return formule
         elif formule.left.value.arity == 1:
-pd
             return negationNormale(formule.left.left)
         elif formule.left.value.arity == 2:
             if formule.left.value == Symbol.AND():
