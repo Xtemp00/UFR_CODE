@@ -35,8 +35,42 @@ unsigned getMantisse(float reel){
     return (*(unsigned*)(&reel)) & 0x7FFFFF;
 }
 
+float setSigne(float reel, unsigned signe){
+    unsigned bits = (*(unsigned *)(&reel) & 0x7FFFFFFF) | (signe << 31);
+    return *(float *) & bits;
+}
+
+float setMantisse(float reel, unsigned mantisse){
+    unsigned bits = (*(unsigned *)(&reel) & 0xFF800000) | (mantisse & 0x7FFFFFFF);
+    return *(float *) & bits;
+}
+
+float setExposant(float reel, unsigned exposant){
+    unsigned bits = (*(unsigned *)(&reel) & 0x807FFFFF) | (exposant << 23);
+    return *(float *) & bits;
+}
+
+//fonction add qui retourne |f1|+|f2|
+//sachant ces tests:
+//printf("%f \n",add(-1.5,2.75)); //=> 4.25
+//printf("%f \n",add(-1.5,-2.75)); //=> 4.25
+//-1.5 + 2.75 = 4.25
+//-1.5 -2.75 = 4.25
+float add(float f1, float f2) {
 
 
+
+
+}
+
+void afficherDetailFloat(float reel){
+    printf("--------\n");
+    printf("Reel = %f\n", reel);
+    printf("Signe = %d\n", getSigne(reel));
+    printf("Mantisse = %d\n", getMantisse(reel));
+    printf("Exposant = %d\n", getExposant(reel));
+    printf("--------\n");
+}
 int main() {
     //floatMaxPlus1
     printf("Fonction floatMaxPlus1 \n");
@@ -66,6 +100,23 @@ int main() {
     printf("%u \n", getMantisse(102));
     printf("%u \n", getMantisse(-102));
 
+    //Setter
+    printf("\nFonctions set\n");
+    printf("%f \n", setSigne(102,1));
+    printf("%f \n", setSigne(-102,0));
+    printf("%f \n", setExposant(102,1));
+    printf("%f \n", setExposant(-102,0));
+    printf("%f \n", setMantisse(102,1));
+    printf("%f \n", setMantisse(-102,0));
+
+    //Add
+    printf("\nFonction add\n");
+    printf("%f \n",add(-1.5,2.75)); //=> 4.25
+    printf("%f \n",add(-1.5,-2.75)); //=> 4.25
+
+    //AfficherDetailFloat
+    printf("\nFonction afficherDetailFloat\n");
+    afficherDetailFloat(102);
 
 
 
