@@ -56,11 +56,59 @@ float setExposant(float reel, unsigned exposant){
 //printf("%f \n",add(-1.5,-2.75)); //=> 4.25
 //-1.5 + 2.75 = 4.25
 //-1.5 -2.75 = 4.25
-float add(float f1, float f2) {
+//Opérateur d’addition Implémentez la fonction add qui retourne |f1|+|f2|, f1 et f2 étant deux
+//nombres réels normalisés (sans utiliser l’addition des réels, ni la fonction fabs). Le résultat
+//sera normalisé aussi. Vous pouvez utiliser les fonctions getSigne, getExposant, getMantisse,
+//setSigne, setExposant, setMantisse.
+float add(float f1, float f2){
+    unsigned signe1 = getSigne(f1);
+    unsigned signe2 = getSigne(f2);
+    unsigned exposant1 = getExposant(f1);
+    unsigned exposant2 = getExposant(f2);
+    unsigned mantisse1 = getMantisse(f1);
+    unsigned mantisse2 = getMantisse(f2);
+    unsigned mantisse = 0;
+    unsigned exposant = 0;
+    unsigned signe = 0;
+    if(exposant1 > exposant2){
+        exposant = exposant1;
+        mantisse = mantisse1;
+    }else{
+        exposant = exposant2;
+        mantisse = mantisse2;
+    }
+    if(signe1 == signe2){
+        mantisse = mantisse1 + mantisse2;
+    }else{
+        if(mantisse1 > mantisse2){
+            mantisse = mantisse1 - mantisse2;
+        }else{
+            mantisse = mantisse2 - mantisse1;
+        }
+    }
+    return setSigne(setExposant(setMantisse(0, mantisse), exposant), signe);
+
+}
+
+// Fonction pour convertir un nombre réel en sa représentation hexadécimale
+//unsigned n = ...
+//sprintf(res,"%c1.%xp%d", (n >> 31) ? ... : ... ,(n... ) << 1 ,((n....) ... )- ...);
+void toHexString(char *res, float f) {
+    unsigned n = *(unsigned *) &f;
+    sprintf(res, "%c1.%xp%d", (n >> 31) ? '-' : '+', (n & 0x7FFFFF) << 1, ((n >> 23) & 0xFF) - 127);
+}
 
 
-
-
+//sachant
+//res = (s==’-’) ? ... : ....| (e+...)... | (m >> 1));
+//return ....;
+float parseFloat(char *ch){
+    unsigned res=0,e,m;
+    char s;
+    sscanf(ch,"%c1.%xp%d",&s,&m,&e);
+    res = (s=='-') ? 0x80000000 : 0;
+    res =res | ((e+127)<<23) | (m >> 1);
+    return *(float*)&res;
 }
 
 void afficherDetailFloat(float reel){
@@ -117,6 +165,23 @@ int main() {
     //AfficherDetailFloat
     printf("\nFonction afficherDetailFloat\n");
     afficherDetailFloat(102);
+
+    //ToHexString
+    printf("\nFonction toHexString\n");
+    char r[12];
+    toHexString(r,125.25f); //=> *r="+1.f50000p6"
+    printf("%s\n", r);
+    toHexString(r,0.375f); //=> *r="+1.800000p-2"
+    printf("%s\n", r);
+    toHexString(r,-0.1f); //=> *r="-1.99999ap-4"
+    printf("%s\n", r);
+
+
+    //ParseFloat
+    printf("\nFonction parseFloat\n");
+    printf("%f\n",parseFloat("+1.F50000p85"));// => 125,25
+    printf("%f\n",parseFloat("+1.800000p7D"));// =>0.375
+    printf("%f\n",parseFloat("-1.99999Ap7B"));// =>-0.1
 
 
 
